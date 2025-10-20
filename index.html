@@ -17,6 +17,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: url("meo.png") 48 64, auto;
       }
 
       .box {
@@ -78,6 +79,26 @@
         transform-origin: 100% 100%;
       }
 
+      .falling-image {
+        position: fixed;
+        width: 48px;
+        height: 64px;
+        pointer-events: none;
+        animation: fall 2s linear forwards;
+        z-index: 9999;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
       @keyframes animate {
         0% {
           transform: scale(1);
@@ -99,11 +120,49 @@
   </head>
 
   <body>
+    <audio id="bgMusic" loop>
+      <source src="let-me-love-you.mp3" type="audio/mpeg" />
+    </audio>
     <h1>20/10 zui zẻ nho bé êu<br />Mãi eo Hồ Tâm</h1>
     <div class="box">
       <canvas id="pinkboard"></canvas>
     </div>
     <script>
+      // Click to spawn falling images
+      document.addEventListener("click", function (e) {
+        var img = document.createElement("img");
+        img.src = "shit.png";
+        img.className = "falling-image";
+        // Center the image on cursor (48/2 = 24, 64/2 = 32)
+        img.style.left = e.clientX - 24 + "px";
+        img.style.top = e.clientY - 32 + "px";
+        document.body.appendChild(img);
+
+        // Remove image after animation
+        setTimeout(function () {
+          document.body.removeChild(img);
+        }, 2000);
+      });
+
+      // Play music on user interaction
+      var audio = document.getElementById("bgMusic");
+
+      // Try to play immediately
+      var playPromise = audio.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(function () {
+          // Auto-play was prevented, play on first click
+          document.body.addEventListener(
+            "click",
+            function () {
+              audio.play();
+            },
+            { once: true }
+          );
+        });
+      }
+
       /*
        * Settings
        */
